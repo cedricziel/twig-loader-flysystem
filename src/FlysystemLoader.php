@@ -40,7 +40,7 @@ class FlysystemLoader implements Twig_LoaderInterface
      */
     public function getSource($name)
     {
-        $this->checkTemplateExistsAndIsFileOrFail($name);
+        $this->getFileOrFail($name);
 
         return $this->filesystem->read($name);
     }
@@ -50,17 +50,21 @@ class FlysystemLoader implements Twig_LoaderInterface
      *
      * @param string $name
      *
+     * @return \League\Flysystem\File|\League\Flysystem\Handler
      * @throws Twig_Error_Loader
      */
-    protected function checkTemplateExistsAndIsFileOrFail($name)
+    protected function getFileOrFail($name)
     {
         if (!$this->filesystem->has($name)) {
             throw new Twig_Error_Loader('Template could not be found on the given filesystem');
         }
 
-        if ($this->filesystem->get($name)->isDir()) {
+        $fileObject = $this->filesystem->get($name);
+        if ($fileObject->isDir()) {
             throw new Twig_Error_Loader('Cannot use directory as template');
         }
+
+        return $fileObject;
     }
 
     /**
@@ -74,7 +78,7 @@ class FlysystemLoader implements Twig_LoaderInterface
      */
     public function getCacheKey($name)
     {
-        $this->checkTemplateExistsAndIsFileOrFail($name);
+        $this->getFileOrFail($name);
 
         return $name;
     }
@@ -92,7 +96,8 @@ class FlysystemLoader implements Twig_LoaderInterface
      */
     public function isFresh($name, $time)
     {
-        $this->checkTemplateExistsAndIsFileOrFail($name);
-        // TODO: Implement isFresh() method.
+        $object = $this->getFileOrFail($name);
+
+        return (int)$time >= (int)$object->getTimestamp();
     }
 }

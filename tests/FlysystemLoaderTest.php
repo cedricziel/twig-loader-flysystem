@@ -4,6 +4,7 @@ namespace CedricZiel\TwigLoaderFlysystem\Test;
 
 use CedricZiel\TwigLoaderFlysystem\FlysystemLoader;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\File;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Handler;
 
@@ -114,5 +115,50 @@ class FlysystemLoaderTest extends \PHPUnit_Framework_TestCase
 
         $cacheKey = 'test/Object.twig';
         $this->assertEquals($cacheKey, $loader->getCacheKey($cacheKey));
+    }
+
+    /**
+     * @test
+     */
+    public function canDetermineIfATemplateIsStillFresh()
+    {
+        $templateFile = $this->getMockBuilder(File::class)
+            ->getMock();
+        $templateFile
+            ->method('isDir')
+            ->willReturn(false);
+        $templateFile
+            ->method('getTimestamp')
+            ->willReturn(1233);
+
+        $filesystemAdapter = $this->getMockBuilder(AdapterInterface::class)
+            ->getMock();
+        $filesystemAdapter
+            ->method('read')
+            ->willReturn($templateFile);
+
+        /** @var Filesystem|\PHPUnit_Framework_MockObject_MockObject $filesystem */
+        $filesystem = $this->getMockBuilder(Filesystem::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['has', 'get', 'getAdapter', 'read'])
+            ->getMock();
+        $filesystem
+            ->method('getAdapter')
+            ->willReturn($filesystemAdapter);
+        $filesystem
+            ->method('read')
+            ->willReturn('{{ template }}');
+        $filesystem
+            ->expects($this->atLeastOnce())
+            ->method('has')
+            ->willReturn(true);
+        $filesystem
+            ->method('get')
+            ->willReturn($templateFile);
+
+        $loader = new FlysystemLoader($filesystem);
+
+        $templateFile = 'test/Object.twig';
+        $this->assertTrue($loader->isFresh($templateFile, 1234));
     }
 }
