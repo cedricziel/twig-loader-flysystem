@@ -1,5 +1,7 @@
 # Twig loader for flysystem filesystems
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cedricziel/twig-loader-flysystem/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cedricziel/twig-loader-flysystem/?branch=master) [![Build Status](https://scrutinizer-ci.com/g/cedricziel/twig-loader-flysystem/badges/build.png?b=master)](https://scrutinizer-ci.com/g/cedricziel/twig-loader-flysystem/build-status/master)
+
 [Flysystem](http://flysystem.thephpleague.com/) loader for the [Twig](http://twig.sensiolabs.org/) templating engine.
 
 ## Installation
