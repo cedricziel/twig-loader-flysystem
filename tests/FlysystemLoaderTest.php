@@ -73,4 +73,46 @@ class FlysystemLoaderTest extends \PHPUnit_Framework_TestCase
 
         $loader->getSource('test/Object.twig');
     }
+
+    /**
+     * @test
+     */
+    public function canCreateCacheKey()
+    {
+        $templateFile = $this->getMockBuilder(Handler::class)
+            ->getMock();
+        $templateFile
+            ->method('isDir')
+            ->willReturn(false);
+
+        $filesystemAdapter = $this->getMockBuilder(AdapterInterface::class)
+            ->getMock();
+        $filesystemAdapter
+            ->method('read')
+            ->willReturn($templateFile);
+
+        /** @var Filesystem|\PHPUnit_Framework_MockObject_MockObject $filesystem */
+        $filesystem = $this->getMockBuilder(Filesystem::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['has', 'get', 'getAdapter', 'read'])
+            ->getMock();
+        $filesystem
+            ->method('getAdapter')
+            ->willReturn($filesystemAdapter);
+        $filesystem
+            ->method('read')
+            ->willReturn('{{ template }}');
+        $filesystem
+            ->expects($this->atLeastOnce())
+            ->method('has')
+            ->willReturn(true);
+        $filesystem
+            ->method('get')
+            ->willReturn($templateFile);
+
+        $loader = new FlysystemLoader($filesystem);
+
+        $cacheKey = 'test/Object.twig';
+        $this->assertEquals($cacheKey, $loader->getCacheKey($cacheKey));
+    }
 }

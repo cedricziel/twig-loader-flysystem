@@ -75,7 +75,8 @@ class FlysystemLoader implements Twig_LoaderInterface
     public function getCacheKey($name)
     {
         $this->checkTemplateExistsAndIsFileOrFail($name);
-        // TODO: Implement getCacheKey() method.
+
+        return $name;
     }
 
     /**
