@@ -1,6 +1,6 @@
-# [WIP] twig-loader-flysystem
+# Twig loader for flysystem filesystems
 
-Flysystem loader for the twig templating engine
+[Flysystem](http://flysystem.thephpleague.com/) loader for the [Twig](http://twig.sensiolabs.org/) templating engine.
 
 ## Installation
 
@@ -12,7 +12,7 @@ composer require cedricziel/twig-loader-flysystem
 
 ## Usage
 
-Adapted from the [official twig documentation](http://twig.sensiolabs.org/doc/api.html#basics)
+Adapted from the [official Twig documentation](http://twig.sensiolabs.org/doc/api.html#basics)
 
 ```php
 $localAdapter = new League\Flysystem\Adapter\Local(__DIR__);
