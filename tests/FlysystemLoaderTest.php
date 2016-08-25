@@ -161,4 +161,46 @@ class FlysystemLoaderTest extends \PHPUnit_Framework_TestCase
         $templateFile = 'test/Object.twig';
         $this->assertTrue($loader->isFresh($templateFile, 1234));
     }
+
+    /**
+     * @test
+     */
+    public function aFilesystemPrefixCanBeUsed()
+    {
+        $templateFile = $this->getMockBuilder(Handler::class)
+            ->getMock();
+        $templateFile
+            ->method('isDir')
+            ->willReturn(false);
+
+        $filesystemAdapter = $this->getMockBuilder(AdapterInterface::class)
+            ->getMock();
+        $filesystemAdapter
+            ->method('read')
+            ->willReturn($templateFile);
+
+        /** @var Filesystem|\PHPUnit_Framework_MockObject_MockObject $filesystem */
+        $filesystem = $this->getMockBuilder(Filesystem::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['has', 'get', 'getAdapter', 'read'])
+            ->getMock();
+        $filesystem
+            ->method('getAdapter')
+            ->willReturn($filesystemAdapter);
+        $filesystem
+            ->method('read')
+            ->willReturn('{{ template }}');
+        $filesystem
+            ->expects($this->atLeastOnce())
+            ->method('has')
+            ->willReturn(true);
+        $filesystem
+            ->method('get')
+            ->with('templates/test/Object.twig')
+            ->willReturn($templateFile);
+
+        $loader = new FlysystemLoader($filesystem, 'templates');
+
+        $loader->getSource('test/Object.twig');
+    }
 }
