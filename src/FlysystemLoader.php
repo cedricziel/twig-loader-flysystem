@@ -20,13 +20,19 @@ class FlysystemLoader implements Twig_LoaderInterface
     private $filesystem;
 
     /**
+     * @var string
+     */
+    private $templatePath;
+
+    /**
      * FlysystemLoader constructor.
      *
      * @param Filesystem $filesystem
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, $templatePath = '')
     {
         $this->filesystem = $filesystem;
+        $this->templatePath = $templatePath;
     }
 
     /**
@@ -42,7 +48,7 @@ class FlysystemLoader implements Twig_LoaderInterface
     {
         $this->getFileOrFail($name);
 
-        return $this->filesystem->read($name);
+        return $this->filesystem->read($this->templatePath.$name);
     }
 
     /**
@@ -55,11 +61,11 @@ class FlysystemLoader implements Twig_LoaderInterface
      */
     protected function getFileOrFail($name)
     {
-        if (!$this->filesystem->has($name)) {
+        if (!$this->filesystem->has($this->templatePath.$name)) {
             throw new Twig_Error_Loader('Template could not be found on the given filesystem');
         }
 
-        $fileObject = $this->filesystem->get($name);
+        $fileObject = $this->filesystem->get($this->templatePath.$name);
         if ($fileObject->isDir()) {
             throw new Twig_Error_Loader('Cannot use directory as template');
         }
