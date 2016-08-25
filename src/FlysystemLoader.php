@@ -48,7 +48,7 @@ class FlysystemLoader implements Twig_LoaderInterface
     {
         $this->getFileOrFail($name);
 
-        return $this->filesystem->read($this->templatePath.$name);
+        return $this->filesystem->read($this->resolveTemplateName($name));
     }
 
     /**
@@ -61,11 +61,11 @@ class FlysystemLoader implements Twig_LoaderInterface
      */
     protected function getFileOrFail($name)
     {
-        if (!$this->filesystem->has($this->templatePath.$name)) {
+        if (!$this->filesystem->has($this->resolveTemplateName($name))) {
             throw new Twig_Error_Loader('Template could not be found on the given filesystem');
         }
 
-        $fileObject = $this->filesystem->get($this->templatePath.$name);
+        $fileObject = $this->filesystem->get($this->resolveTemplateName($name));
         if ($fileObject->isDir()) {
             throw new Twig_Error_Loader('Cannot use directory as template');
         }
@@ -105,5 +105,20 @@ class FlysystemLoader implements Twig_LoaderInterface
         $object = $this->getFileOrFail($name);
 
         return (int)$time >= (int)$object->getTimestamp();
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function resolveTemplateName($name)
+    {
+        $prefix = $this->templatePath;
+        if ($this->templatePath !== null && $this->templatePath !== '') {
+            $prefix = rtrim($prefix, '/').'/';
+        }
+
+        return $prefix.$name;
     }
 }
