@@ -23,7 +23,22 @@ $filesystem = League\Flysystem\Filesystem($localAdapter);
 $loader = new CedricZiel\TwigLoaderFlysystem\FlysystemLoader($filesystem);
 $twig = new \Twig_Environment($loader);
 
-$template = $twig->loadTemplate('index.html');
+$template = $twig->loadTemplate('index.html.twig');
+$content = $template->render(array('the' => 'variables', 'go' => 'here'));
+```
+
+The loader also supports using a subdirectory on the associated flysystem
+as permanent prefix:
+
+```php
+$localAdapter = new League\Flysystem\Adapter\Local(__DIR__);
+$filesystem = League\Flysystem\Filesystem($localAdapter);
+
+$loader = new CedricZiel\TwigLoaderFlysystem\FlysystemLoader($filesystem, 'templates');
+$twig = new \Twig_Environment($loader);
+
+// this will load 'templates/index.html.twig' from the current flysystem filesystem
+$template = $twig->loadTemplate('index.html.twig');
 $content = $template->render(array('the' => 'variables', 'go' => 'here'));
 ```
 
