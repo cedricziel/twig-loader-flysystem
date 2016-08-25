@@ -28,6 +28,7 @@ class FlysystemLoader implements Twig_LoaderInterface
      * FlysystemLoader constructor.
      *
      * @param Filesystem $filesystem
+     * @param string $templatePath
      */
     public function __construct(Filesystem $filesystem, $templatePath = '')
     {
